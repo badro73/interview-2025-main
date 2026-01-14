@@ -85,11 +85,10 @@ class Transaction
     #[Groups(['TransactionView', 'TransactionCreate'])]
     private string $iban;
 
-    #[ORM\ManyToOne(targetEntity: BusinessPartner::class, inversedBy: 'transactions')]
+    #[ORM\ManyToOne(targetEntity: Account::class, inversedBy: 'transactions')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank]
-    #[Groups(['TransactionView', 'TransactionCreate'])]
-    private BusinessPartner $businessPartner;
+    private Account $account;
 
     public function getId(): int
     {
@@ -166,13 +165,13 @@ class Transaction
         $this->iban = $iban;
     }
 
-    public function getBusinessPartner(): BusinessPartner
+    public function getAccount(): Account
     {
-        return $this->businessPartner;
+        return $this->account;
     }
 
-    public function setBusinessPartner(BusinessPartner $businessPartner): void
+    public function setAccount(Account $account): void
     {
-        $this->businessPartner = $businessPartner;
+        $this->account = $account;
     }
 }

@@ -2,8 +2,10 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Account;
 use App\Entity\BusinessPartner;
 use App\Enums\BusinessPartnerStatusEnum;
+use App\Enums\CurrencyEnum;
 use App\Enums\LegalFormEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -12,29 +14,40 @@ class BusinessPartnerFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $businessPartner = new BusinessPartner();
-        $businessPartner->setName('AMNIS Treasury Services AG');
-        $businessPartner->setStatus(BusinessPartnerStatusEnum::ACTIVE);
-        $businessPartner->setLegalForm(LegalFormEnum::LIMITED_LIABILITY_COMPANY);
-        $businessPartner->setBalance('10000');
-        $businessPartner->setAddress('Baslerstrasse 60');
-        $businessPartner->setCity('Zürich');
-        $businessPartner->setZip(8048);
-        $businessPartner->setCountry('CH');
+        $partner1 = new BusinessPartner();
+        $partner1->setName('AMNIS Treasury Services AG');
+        $partner1->setStatus(BusinessPartnerStatusEnum::ACTIVE);
+        $partner1->setLegalForm(LegalFormEnum::LIMITED_LIABILITY_COMPANY);
+        $partner1->setAddress('Baslerstrasse 60');
+        $partner1->setCity('Zürich');
+        $partner1->setZip(8048);
+        $partner1->setCountry('CH');
 
-        $manager->persist($businessPartner);
+        $manager->persist($partner1);
 
-        $businessPartner = new BusinessPartner();
-        $businessPartner->setName('AMNIS Europe AG');
-        $businessPartner->setStatus(BusinessPartnerStatusEnum::INACTIVE);
-        $businessPartner->setLegalForm(LegalFormEnum::LIMITED_LIABILITY_COMPANY);
-        $businessPartner->setBalance('10000');
-        $businessPartner->setAddress('Gewerbeweg 15');
-        $businessPartner->setCity('Vaduz');
-        $businessPartner->setZip(9490);
-        $businessPartner->setCountry('LI');
+        // Ajout d'un compte CHF pour le premier partenaire
+        $account1CHF = new Account();
+        $account1CHF->setCurrency(CurrencyEnum::CHF);
+        $account1CHF->setBalance('10000.00');
+        $account1CHF->setBusinessPartner($partner1);
+        $manager->persist($account1CHF);
 
-        $manager->persist($businessPartner);
+        $partner2 = new BusinessPartner();
+        $partner2->setName('AMNIS Europe AG');
+        $partner2->setStatus(BusinessPartnerStatusEnum::INACTIVE);
+        $partner2->setLegalForm(LegalFormEnum::LIMITED_LIABILITY_COMPANY);
+        $partner2->setAddress('Gewerbeweg 15');
+        $partner2->setCity('Vaduz');
+        $partner2->setZip(9490);
+        $partner2->setCountry('LI');
+
+        $manager->persist($partner2);
+
+        $account2EUR = new Account();
+        $account2EUR->setCurrency(CurrencyEnum::EUR);
+        $account2EUR->setBalance('10000.00');
+        $account2EUR->setBusinessPartner($partner2);
+        $manager->persist($account2EUR);
 
         $manager->flush();
     }

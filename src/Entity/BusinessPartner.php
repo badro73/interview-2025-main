@@ -71,15 +71,12 @@ class BusinessPartner
     #[Groups(['BusinessPartnerView', 'BusinessPartnerCreate'])]
     private string $country;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank]
-    #[Assert\GreaterThanOrEqual(0)]
+    /**
+     * @var Collection<int, Account>
+     */
+    #[ORM\OneToMany(targetEntity: Account::class, mappedBy: 'businessPartner')]
     #[Groups(['BusinessPartnerView'])]
-    private ?string $balance = '0';
-
-    #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'businessPartner')]
-    #[Groups(['BusinessPartnerView'])]
-    private Collection $transactions;
+    private Collection $accounts;
 
     public function __toString(): string
     {
@@ -88,7 +85,7 @@ class BusinessPartner
 
     public function __construct()
     {
-        $this->transactions = new ArrayCollection();
+        $this->accounts = new ArrayCollection();
     }
 
     public function getId(): int
@@ -166,35 +163,33 @@ class BusinessPartner
         $this->country = $country;
     }
 
-    public function getBalance(): ?string
+    /**
+     * @return Collection<int, Account>
+     */
+    public function getAccounts(): Collection
     {
-        return $this->balance;
+        return $this->accounts;
     }
 
-    public function setBalance(?string $balance): void
+    public function addAccount(Account $account): static
     {
-        $this->balance = $balance;
-    }
-
-    public function getTransactions(): Collection
-    {
-        return $this->transactions;
-    }
-
-    public function setTransactions(Collection $transactions): void
-    {
-        $this->transactions = $transactions;
-    }
-
-    public function addTransaction(Transaction $transaction): void
-    {
-        if (!$this->transactions->contains($transaction)) {
-            $this->transactions->add($transaction);
+        if (!$this->accounts->contains($account)) {
+            $this->accounts->add($account);
+            $account->setBusinessPartner($this);
         }
+
+        return $this;
     }
 
-    public function removeTransaction(Transaction $transaction): void
+    public function removeAccount(Account $account): static
     {
-        $this->transactions->removeElement($transaction);
+        if ($this->accounts->removeElement($account)) {
+            // set the owning side to null (unless already changed)
+            if ($account->getBusinessPartner() === $this) {
+                $account->setBusinessPartner(null);
+            }
+        }
+
+        return $this;
     }
 }
