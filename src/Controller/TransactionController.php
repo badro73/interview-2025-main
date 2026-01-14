@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Account;
 use App\Entity\Transaction;
 use App\Form\TransactionType;
+use App\Repository\AccountRepository;
 use App\Repository\BusinessPartnerRepository;
 use App\Repository\TransactionRepository;
 use App\Service\PayoutManager;
@@ -21,16 +23,16 @@ class TransactionController extends AbstractController
     public function list(
         Request $request,
         TransactionRepository $transactionRepository,
-        BusinessPartnerRepository $businessPartnerRepository
+        AccountRepository $accountRepository
     ): Response {
-        $businessPartnerId = $request->query->get('businessPartnerId');
+        $accountId = $request->query->get('accountId');
 
-        $businessPartner = $businessPartnerId ? $businessPartnerRepository->find($businessPartnerId) : null;
+        $account = $accountId ? $accountRepository->find($accountId) : null;
 
         return $this->render('transaction/list.html.twig', [
-            'businessPartner' => $businessPartner,
-            'transactions' => $businessPartner
-                ? $transactionRepository->findByBusinessPartner($businessPartner)
+            'account' => $account,
+            'transactions' => $account
+                ? $transactionRepository->findByAccount($account)
                 : $transactionRepository->findAll(),
         ]);
     }

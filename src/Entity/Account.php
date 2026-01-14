@@ -43,7 +43,6 @@ class Account
     #[Groups(['AccountView', 'AccountCreate'])]
     private string $balance = '0';
 
-
     #[ORM\ManyToOne(targetEntity: BusinessPartner::class, inversedBy: 'accounts')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['AccountView', 'AccountCreate'])]
