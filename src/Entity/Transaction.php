@@ -58,13 +58,13 @@ class Transaction
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
-    #[Groups(['TransactionView'])]
+    #[Groups(['TransactionView', 'AccountView'])]
     private int $id;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank]
     #[Assert\GreaterThanOrEqual(1)]
-    #[Groups(['TransactionView', 'TransactionCreate'])]
+    #[Groups(['TransactionView', 'TransactionCreate','AccountView'])]
     private ?string $amount;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
