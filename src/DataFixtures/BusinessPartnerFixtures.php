@@ -25,7 +25,6 @@ class BusinessPartnerFixtures extends Fixture
 
         $manager->persist($partner1);
 
-        // Ajout d'un compte CHF pour le premier partenaire
         $account1CHF = new Account();
         $account1CHF->setCurrency(CurrencyEnum::CHF);
         $account1CHF->setBalance('0.00');
@@ -46,7 +45,7 @@ class BusinessPartnerFixtures extends Fixture
         $account = new Account();
         $account->setCurrency(CurrencyEnum::CHF);
         $account->setBalance('0.00');
-        $account->setBusinessPartner($partner1);
+        $account->setBusinessPartner($partner2);
         $manager->persist($account);
 
         $manager->flush();
