@@ -14,6 +14,7 @@ use App\Controller\Api\PayinController;
 use App\Controller\Api\PayoutController;
 use App\Controller\Api\PayoutExecutionController;
 use App\Dto\ExchangeInput;
+use App\Dto\ExchangeOutput;
 use App\Enums\TransactionTypeEnum;
 use App\Repository\TransactionRepository;
 use DateTimeImmutable;
@@ -52,7 +53,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     normalizationContext: ['groups' => ['TransactionView']]
 )]
-#[ApiFilter(SearchFilter::class, properties: ['account.currency' => 'exact'])]
+#[ApiFilter(SearchFilter::class, properties: ['account.currency' => 'exact', 'account.id'])]
 class Transaction
 {
     #[ORM\Id]
@@ -69,12 +70,12 @@ class Transaction
 
     #[ORM\Column(type: Types::STRING, length: 255)]
     #[Assert\Length(min: 1, max: 255)]
-    #[Groups(['TransactionView', 'TransactionCreate'])]
+    #[Groups(['TransactionView', 'TransactionCreate','AccountView'])]
     private string $name;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Assert\NotBlank]
-    #[Groups(['TransactionView', 'TransactionCreate'])]
+    #[Groups(['TransactionView', 'TransactionCreate','AccountView'])]
     private DateTimeImmutable $date;
 
     #[ORM\Column(type: Types::BOOLEAN)]
@@ -83,7 +84,7 @@ class Transaction
 
     #[ORM\Column(type: Types::STRING, length: 50, enumType: TransactionTypeEnum::class)]
     #[Assert\Type(type: TransactionTypeEnum::class, message: 'Choose a valid type.')]
-    #[Groups(['TransactionView'])]
+    #[Groups(['TransactionView', 'AccountView'])]
     private TransactionTypeEnum $type;
 
     #[ORM\Column(type: Types::STRING, length: 2)]

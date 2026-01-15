@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Dto\ExchangeInput;
+use App\Dto\ExchangeOutput;
 use App\Entity\Transaction;
 use App\Repository\BusinessPartnerRepository;
 use App\Service\ExchangeManager;
@@ -19,7 +20,11 @@ class ExchangeController extends AbstractController
         private readonly BusinessPartnerRepository $businessPartnerRepository
     ) {}
 
-    public function __invoke(#[MapRequestPayload] ExchangeInput $exchangeInput): Transaction
+    /**
+     * @param ExchangeInput $exchangeInput
+     * @return Transaction[]
+     */
+    public function __invoke(#[MapRequestPayload] ExchangeInput $exchangeInput): array
     {
         $partner = $this->businessPartnerRepository->find($exchangeInput->businessPartnerId);
 
@@ -28,16 +33,17 @@ class ExchangeController extends AbstractController
         }
 
         try {
-            $this->exchangeManager->executeExchange(
+            $result = $this->exchangeManager->executeExchange(
                 $partner,
                 $exchangeInput->fromCurrency,
                 $exchangeInput->toCurrency,
                 $exchangeInput->amount
             );
+
+        return [$result->buyTransaction, $result->sellTransaction];
+
         } catch (\Exception $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
-
-        return new Transaction();
     }
 }
