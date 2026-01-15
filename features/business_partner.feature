@@ -17,15 +17,14 @@ Feature: Business partner
 
   Scenario: Get a business partner
     Given there is a business partner with data:
-      | name                       | status | legalForm                 | balance | address          | city   | zip  | country |
-      | AMNIS Treasury Services AG | active | limited_liability_company | 400     | Baslerstrasse 60 | Zürich | 8048 | CH      |
+      | name                       | status | legalForm                 | address          | city   | zip  | country |
+      | AMNIS Treasury Services AG | active | limited_liability_company | Baslerstrasse 60 | Zürich | 8048 | CH      |
     When I send a GET request to "/api/business_partners/1"
     Then the response status code should be 200
     And the JSON node "@id" should be equal to the string "/api/business_partners/1"
     And the JSON node "name" should be equal to the string "AMNIS Treasury Services AG"
     And the JSON node "status" should be equal to the string "active"
     And the JSON node "legalForm" should be equal to the string "limited_liability_company"
-    And the JSON node "balance" should be equal to 400
     And the JSON node "address" should be equal to the string "Baslerstrasse 60"
     And the JSON node "city" should be equal to the string "Zürich"
     And the JSON node "zip" should be equal to "8048"

@@ -8,9 +8,9 @@ Feature: Transaction
 
   Scenario: Get a list of transactions
     Given there is a business partner with data:
-      | name                       | status | legalForm                 | balance | address          | city   | zip  | country |
-      | AMNIS Treasury Services AG | active | limited_liability_company | 400     | Baslerstrasse 60 | Zürich | 8048 | CH      |
-      | AMNIS Europe AG            | active | limited_liability_company | 200     | Gewerbeweg 15    | Vaduz  | 9490 | LI      |
+      | name                       | status | legalForm                 | address          | city   | zip  | country |
+      | AMNIS Treasury Services AG | active | limited_liability_company | Baslerstrasse 60 | Zürich | 8048 | CH      |
+      | AMNIS Europe AG            | active | limited_liability_company | Gewerbeweg 15    | Vaduz  | 9490 | LI      |
     Given create a transaction with data:
       | name                       | amount | date                | executed | type   | country | iban                  | businessPartner          |
       | AMNIS Treasury Services AG | 100    | 2024-07-01 13:32:45 | false    | payin  | CH      | CH5604835012345678009 | /api/business_partners/1 |

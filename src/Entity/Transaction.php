@@ -7,9 +7,11 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Controller\Api\ExchangeController;
 use App\Controller\Api\PayinController;
 use App\Controller\Api\PayoutController;
 use App\Controller\Api\PayoutExecutionController;
+use App\Dto\ExchangeInput;
 use App\Enums\TransactionTypeEnum;
 use App\Repository\TransactionRepository;
 use DateTimeImmutable;
@@ -37,6 +39,12 @@ use Symfony\Component\Validator\Constraints as Assert;
             uriTemplate: '/transactions/{id}/payout/execute',
             controller: PayoutExecutionController::class,
             denormalizationContext: ['groups' => ['TransactionPatch']]
+        ),
+        new Post(
+            uriTemplate: '/transactions/exchange',
+            controller: ExchangeController::class,
+            input: ExchangeInput::class,
+            name: 'exchange'
         ),
         new GetCollection(),
     ],
@@ -88,6 +96,7 @@ class Transaction
     #[ORM\ManyToOne(targetEntity: Account::class, inversedBy: 'transactions')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank]
+    #[Groups(['TransactionView', 'TransactionCreate'])]
     private Account $account;
 
     public function getId(): int
