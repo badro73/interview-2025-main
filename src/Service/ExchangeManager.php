@@ -38,8 +38,8 @@ class ExchangeManager
 
             $now = new \DateTimeImmutable();
 
-            $sellTx = $this->createTx($fromAcc, $amount, "Sell $from->value to $to->value", TransactionTypeEnum::PAYOUT, $now);
-            $buyTx = $this->createTx($toAcc, $toAmount, "Buy $to->value from $from->value", TransactionTypeEnum::PAYIN, $now);
+            $sellTx = $this->createTx($fromAcc, $amount, "Sell $from->value to $to->value", TransactionTypeEnum::EXCHANGE, $now);
+            $buyTx = $this->createTx($toAcc, $toAmount, "Buy $to->value from $from->value", TransactionTypeEnum::EXCHANGE, $now);
 
             $this->entityManager->flush();
             $this->entityManager->refresh($sellTx);

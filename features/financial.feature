@@ -74,7 +74,7 @@ Feature: Financial Lifecycle Management
     And the JSON node "hydra:member[0].type" should be equal to "payin"
     And the JSON node "hydra:member[0].amount" should be equal to "1000.00"
     # Second transaction: Currency Exchange Out (Payout/Exchange -1000)
-    And the JSON node "hydra:member[1].type" should be equal to "payout"
+    And the JSON node "hydra:member[1].type" should be equal to "exchange"
     And the JSON node "hydra:member[1].amount" should be equal to "1000.00"
 
     # --- EUR ACCOUNT VERIFICATION ---
@@ -84,7 +84,7 @@ Feature: Financial Lifecycle Management
     Then the response status code should be 200
     And the JSON node "hydra:totalItems" should be equal to 2
     # First transaction: Currency Exchange In (Payin/Exchange +1100)
-    And the JSON node "hydra:member[0].type" should be equal to "payin"
+    And the JSON node "hydra:member[0].type" should be equal to "exchange"
     And the JSON node "hydra:member[0].amount" should be equal to "1100.00"
     # Second transaction: ATM Withdrawal (Payout -1100)
     And the JSON node "hydra:member[1].type" should be equal to "payout"
