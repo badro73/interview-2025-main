@@ -30,6 +30,7 @@ class AccountController extends AbstractController
         $businessPartner = $businessPartnerId ? $this->businessPartnerRepository->find($businessPartnerId) : null;
 
         return $this->render('account/list.html.twig', [
+            'businessPartner' => $businessPartner,
             'accounts' =>  $businessPartner
                 ? $this->accountRepository->findByBusinessPartner($businessPartner)
                 : $this->accountRepository->findAll(),
