@@ -7,6 +7,31 @@
 {% block body %}
     <h1>{{ titleText }}</h1>
 
+    <div class="card bg-light mb-4">
+        <div class="card-body">
+            <form method="get" action="{{ path('app_transaction_list') }}" class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label for="accountId" class="col-form-label">Filter by Account:</label>
+                </div>
+                <div class="col-auto">
+                    <select name="accountId" id="accountId" class="form-select" onchange="this.form.submit()">
+                        <option value="">-- All Accounts --</option>
+                        {% for acc in all_accounts %}
+                            <option value="{{ acc.id }}" {{ account and account.id == acc.id ? 'selected' : '' }}>
+                                {{ acc.businessPartner.name }} - {{ acc.currency.value }} ({{ acc.balance }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if account %}
+                    <div class="col-auto">
+                        <a href="{{ path('app_transaction_list') }}" class="btn btn-outline-secondary">Clear Filter</a>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
     <table class="table">
         <thead>
             <tr>

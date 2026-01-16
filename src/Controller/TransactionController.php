@@ -38,13 +38,13 @@ class TransactionController extends AbstractController
         AccountRepository $accountRepository
     ): Response {
         $accountId = $request->query->get('accountId');
-
         $account = $accountId ? $accountRepository->find($accountId) : null;
 
         return $this->render('transaction/list.html.twig', [
             'account' => $account,
+            'all_accounts' => $accountRepository->findAll(),
             'transactions' => $account
-                ? $transactionRepository->findByAccount($account)
+                ? $transactionRepository->findBy(['account' => $account])
                 : $transactionRepository->findAll(),
         ]);
     }

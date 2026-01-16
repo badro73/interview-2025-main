@@ -23,21 +23,4 @@ class TransactionRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
-    /**
-     * This method displays a partner's transactions
-     * filtered by a specific currency (e.g., CHF or EUR).
-     */
-    public function findByPartnerAndCurrency(BusinessPartner $partner, string $currency): array
-    {
-        return $this->createQueryBuilder('t')
-            ->join('t.account', 'a') // On joint la nouvelle entité Account
-            ->where('a.businessPartner = :partner')
-            ->andWhere('a.currency = :currency')
-            ->setParameter('partner', $partner)
-            ->setParameter('currency', $currency)
-            ->orderBy('t.date', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
 }
