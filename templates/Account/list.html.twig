@@ -3,7 +3,13 @@
 {% block title %}Account lists{% endblock %}
 
 {% block body %}
-    <h1>Business partner Account lists</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Business partner Account lists</h1>
+        <div class="btn-group">
+            <a class="btn btn-success" href="{{ path('app_transaction_new') }}">➕ New Transaction</a>
+            <a class="btn btn-warning" href="{{ path('app_transaction_exchange') }}">💱 New Exchange</a>
+        </div>
+    </div>
 
     <table class="table">
         <thead>

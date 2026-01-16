@@ -20,19 +20,17 @@ class ExchangeManager
         private readonly EntityManagerInterface $entityManager
     ) {}
 
-    public function executeExchange(BusinessPartner $partner, string $from, string $to, string $amount): ExchangeResult
+    public function executeExchange(BusinessPartner $partner, CurrencyEnum $from, CurrencyEnum $to, string $amount): ExchangeResult
     {
-        $fromEnum = CurrencyEnum::from($from);
-        $toEnum = CurrencyEnum::from($to);
         $toAmount = bcmul($amount, self::DEFAULT_EXCHANGE_RATE, 2);
 
         $this->entityManager->beginTransaction();
         try {
-            $fromAcc = $this->balanceManager->getOrCreateAccount($partner, $fromEnum);
-            $toAcc = $this->balanceManager->getOrCreateAccount($partner, $toEnum);
+            $fromAcc = $this->balanceManager->getOrCreateAccount($partner, $from);
+            $toAcc = $this->balanceManager->getOrCreateAccount($partner, $to);
 
             if (!$this->balanceManager->hasEnoughMoneyForPayout($fromAcc, $amount)) {
-                throw new \Exception("Insufficient balance in $from");
+                throw new \Exception("Insufficient balance in $from->value");
             }
 
             $this->balanceManager->decreaseBalance($fromAcc, $amount);
@@ -40,8 +38,8 @@ class ExchangeManager
 
             $now = new \DateTimeImmutable();
 
-            $sellTx = $this->createTx($fromAcc, $amount, "Sell $from to $to", TransactionTypeEnum::PAYOUT, $now);
-            $buyTx = $this->createTx($toAcc, $toAmount, "Buy $to from $from", TransactionTypeEnum::PAYIN, $now);
+            $sellTx = $this->createTx($fromAcc, $amount, "Sell $from->value to $to->value", TransactionTypeEnum::PAYOUT, $now);
+            $buyTx = $this->createTx($toAcc, $toAmount, "Buy $to->value from $from->value", TransactionTypeEnum::PAYIN, $now);
 
             $this->entityManager->flush();
             $this->entityManager->refresh($sellTx);

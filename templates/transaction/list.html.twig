@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% set titleText = account is not null ? "Transaction list for Account " ~ "- " ~ account.id ~ " - Of Business Partner " ~ account.businessPartner.name : "Transaction list" %}
+{% set titleText = account is not null ? "Transaction list for Account " ~ "- " ~ account.currency.value ~ " - Of Business Partner " ~ account.businessPartner.name : "Transaction list" %}
 
 {% block title %}{{ titleText }}{% endblock %}
 
@@ -34,7 +34,7 @@
                     <td>{{ transaction.country }}</td>
                     <td>{{ transaction.iban }}</td>
                     <td><a href="{{ path('app_account_show', {'id': transaction.account.id}) }}"
-                           target="_blank">{{ transaction.account }}</a></td>
+                           target="_blank">{{ transaction.account.currency.value }}</a></td>
                     <td>
                         <div class="btn-group" role="group">
                             <a class="btn btn-sm btn-outline-primary"
