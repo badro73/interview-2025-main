@@ -29,3 +29,17 @@ Feature: Currency Exchange
     Then the JSON node "balance" should be equal to "0.00"
     When I send a GET request to "/api/accounts/2"
     Then the JSON node "balance" should be equal to "1100.00"
+
+  Scenario: Prevent exchange when balance is insufficient
+    When I send a POST request to "/api/transactions/exchange" with body:
+    """
+    {
+      "fromCurrency": "CHF",
+      "toCurrency": "EUR",
+      "amount": "2000.00",
+      "businessPartnerId": 1
+    }
+    """
+    Then the response status code should be 400
+    When I send a GET request to "/api/accounts/1"
+    Then the JSON node "balance" should be equal to "1000.00"
