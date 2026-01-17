@@ -37,14 +37,6 @@ class AccountController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_account_show', methods: ['GET'])]
-    public function show(Account $account): Response
-    {
-        return $this->render('account/show.html.twig', [
-            'account' => $account,
-        ]);
-    }
-
     #[Route('/new', name: 'app_account_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
@@ -65,8 +57,15 @@ class AccountController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}', name: 'app_account_show', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function show(Account $account): Response
+    {
+        return $this->render('account/show.html.twig', [
+            'account' => $account,
+        ]);
+    }
 
-    #[Route('/{id}/edit', name: 'app_account_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_account_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, Account $account): Response
     {
         $form = $this->createForm(AccountType::class, $account);
@@ -84,7 +83,7 @@ class AccountController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_account_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_account_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Account $account): Response
     {
         if ($this->isCsrfTokenValid('delete'.$account->getId(), $request->getPayload()->getString('_token'))) {
