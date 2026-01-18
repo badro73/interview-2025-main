@@ -95,7 +95,7 @@ Feature: Transaction
     And the JSON node "name" should be equal to the string "AMNIS Treasury Services AG"
     And the JSON node "amount" should be equal to "300"
     And the JSON node "date" should be equal to the string "2024-07-12T09:08:32+00:00"
-    And the JSON node "executed" should be true
+    And the JSON node "executed" should be false
     And the JSON node "type" should be equal to the string "payout"
     And the JSON node "country" should be equal to "CH"
     And the JSON node "iban" should be equal to "CH5604835012345678009"
@@ -124,7 +124,7 @@ Feature: Transaction
     And the JSON node "name" should be equal to the string "AMNIS Treasury Services AG"
     And the JSON node "amount" should be equal to "300"
     And the JSON node "date" should be equal to the string "2024-07-12T09:08:32+00:00"
-    And the JSON node "executed" should be true
+    And the JSON node "executed" should be false
     And the JSON node "type" should be equal to the string "payout"
     And the JSON node "country" should be equal to "CH"
     And the JSON node "iban" should be equal to "CH5604835012345678009"
@@ -136,5 +136,5 @@ Feature: Transaction
 
       }
     """
-    Then the response status code should be 500
-    #And the JSON node "executed" should be true
+    Then the response status code should be 200
+    And the JSON node "executed" should be true

@@ -14,9 +14,7 @@ class PayoutController extends AbstractController
 {
     public function __construct(
         private readonly BalanceManager $balanceManager,
-        private readonly PayoutManager $payoutManager
-    )
-    {
+    ) {
     }
 
     /**
@@ -36,8 +34,6 @@ class PayoutController extends AbstractController
         }
 
         $transaction->setType(TransactionTypeEnum::PAYOUT);
-
-        $this->payoutManager->execute($transaction);
 
         return $transaction;
     }

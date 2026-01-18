@@ -51,7 +51,7 @@
             {% for transaction in transactions %}
                 <tr>
                     <td>{{ transaction.id }}</td>
-                    <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.amount|number_format(2, '.', '') }}</td>
                     <td>{{ transaction.name }}</td>
                     <td>{{ transaction.date ? transaction.date|date('Y-m-d H:i:s') : '' }}</td>
                     <td>{{ transaction.executed ? 'Yes' : 'No' }}</td>
