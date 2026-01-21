@@ -41,6 +41,15 @@
                             <small class="text-muted">The exchange rate is fixed at 1.1</small>
                         </div>
 
+                        <div class="mb-3">
+                            {{ form_label(form.finalAmount, 'You will receive (approx.)') }}
+                            <div class="input-group">
+                                {{ form_widget(form.finalAmount, {'attr': {'id': 'output-amount'}}) }}
+                                <span class="input-group-text bg-primary text-white" id="target-currency-label">EUR</span>
+                            </div>
+                            <small class="text-muted">Rate: 1.1</small>
+                        </div>
+
                         <button type="submit" class="btn btn-primary w-100 mt-3">
                             Confirm Exchange
                         </button>
@@ -62,4 +71,37 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputAmount = document.querySelector('[name*="[amount]"]');
+            const outputAmount = document.querySelector('[name*="[finalAmount]"]');
+            const toCurrencySelect = document.querySelector('[name*="[toCurrency]"]');
+
+            const rate = 1.1;
+
+            if (inputAmount && outputAmount) {
+                inputAmount.addEventListener('input', function() {
+                    const val = parseFloat(this.value);
+                    if (!isNaN(val)) {
+                        outputAmount.value = (val * rate).toFixed(2);
+                    } else {
+                        outputAmount.value = '';
+                    }
+                });
+            }
+
+            if (toCurrencySelect) {
+                toCurrencySelect.addEventListener('change', function() {
+                    const label = document.getElementById('target-currency-label');
+                    if (label) {
+                        label.textContent = this.options[this.selectedIndex].text;
+                    }
+                });
+            }
+        });
+    </script>
 {% endblock %}

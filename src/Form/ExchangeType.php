@@ -36,6 +36,16 @@ class ExchangeType extends AbstractType
                 'label' => 'Amount to Exchange',
                 'html5' => true,
                 'attr' => ['step' => '0.01']
+            ])
+            ->add('finalAmount', NumberType::class, [
+                'label' => 'Estimated Amount to Receive',
+                'mapped' => false,
+                'required' => false,
+                'disabled' => true,
+                'attr' => [
+                    'class' => 'form-control bg-light',
+                    'placeholder' => '0.00'
+                ]
             ]);
     }
 
