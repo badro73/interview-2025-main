@@ -33,14 +33,18 @@ class AppContext implements Context
     public function setup(): void
     {
         $manager = $this->getManager();
-        $manager->getConnection()->getConfiguration()->setMiddlewares([new Middleware(new NullLogger())]);
+        $connection = $manager->getConnection();
+
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS=0');
 
         $purger = new ORMPurger($manager);
         $purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);
         $purger->purge();
 
         $manager->clear();
-        $manager->getConnection()->executeStatement('DELETE FROM SQLITE_SEQUENCE');
+
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS=1');
+
     }
 
     /**

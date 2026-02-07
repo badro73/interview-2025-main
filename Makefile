@@ -40,6 +40,9 @@ install: up composer-install migrate cache-clear
 cache-clear:
 	docker compose exec -T $(PHP_SERVICE) php bin/console cache:clear --no-warmup
 
+clear:
+	docker compose exec -T $(PHP_SERVICE) rm -rf var vendor
+
 cache-clear-prod:
 	docker compose exec -T $(PHP_SERVICE) php bin/console cache:clear --env=prod --no-debug --no-warmup
 
