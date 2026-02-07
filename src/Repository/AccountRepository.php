@@ -4,22 +4,23 @@ namespace App\Repository;
 
 use App\Entity\Account;
 use App\Entity\BusinessPartner;
-use App\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class TransactionRepository extends ServiceEntityRepository
+/**
+ * @extends ServiceEntityRepository<Account>
+ */
+class AccountRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Transaction::class);
+        parent::__construct($registry, Account::class);
     }
 
-    public function findByAccount(Account $account): array
-    {
+    public function findByBusinessPartner(BusinessPartner $businessPartner): array {
         return $this->createQueryBuilder('t')
-            ->andWhere('t.account = :account')
-            ->setParameter('account', $account)
+            ->andWhere('t.businessPartner = :businessPartner')
+            ->setParameter('businessPartner', $businessPartner)
             ->getQuery()
             ->getResult();
     }

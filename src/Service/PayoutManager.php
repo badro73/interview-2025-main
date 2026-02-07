@@ -28,7 +28,7 @@ class PayoutManager
         }
 
         if (!$this->balanceManager->hasEnoughMoneyForPayout(
-            $transaction->getBusinessPartner(),
+            $transaction->getAccount(),
             $transaction->getAmount()
         )) {
             throw new TransactionExecutionException('You do not have enough money for a payout');
@@ -36,6 +36,6 @@ class PayoutManager
 
         $transaction->setExecuted(true);
 
-        $this->balanceManager->decreaseBalance($transaction->getBusinessPartner(), $transaction->getAmount());
+        $this->balanceManager->decreaseBalance($transaction->getAccount(), $transaction->getAmount());
     }
 }

@@ -22,7 +22,6 @@ final class Version20240710114217 extends AbstractMigration
                 name VARCHAR(255) NOT NULL,
                 status VARCHAR(255) NOT NULL,
                 legal_form VARCHAR(255) NOT NULL,
-                balance NUMERIC(10, 2) NOT NULL,
                 address VARCHAR(70) NOT NULL,
                 city VARCHAR(35) NOT NULL,
                 zip VARCHAR(16) NOT NULL,
@@ -30,12 +29,24 @@ final class Version20240710114217 extends AbstractMigration
             )
         SQL
         );
+
+        $this->addSql(<<<'SQL'
+            CREATE TABLE accounts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                business_partner_id INTEGER NOT NULL, 
+                currency VARCHAR(255) NOT NULL, 
+                balance NUMERIC(10, 2) NOT NULL, 
+                CONSTRAINT FK_7D3656A45330F055 FOREIGN KEY (business_partner_id) REFERENCES business_partners (id) NOT DEFERRABLE INITIALLY IMMEDIATE
+            )
+        SQL
+        );
+        $this->addSql('CREATE INDEX IDX_7D3656A45330F055 ON accounts (business_partner_id)');
+
         $this->addSql(<<<'SQL'
             CREATE TABLE transactions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                business_partner_id INTEGER NOT NULL,
-                amount NUMERIC(10,
-                2) NOT NULL,
+                account_id INTEGER NOT NULL,
+                amount NUMERIC(10, 2) NOT NULL,
                 name VARCHAR(255) NOT NULL,
                 date DATETIME NOT NULL --(DC2Type:datetime_immutable)
                 ,
@@ -43,16 +54,17 @@ final class Version20240710114217 extends AbstractMigration
                 type VARCHAR(50) NOT NULL,
                 country VARCHAR(2) NOT NULL,
                 iban VARCHAR(34) NOT NULL,
-                CONSTRAINT FK_723705D15330F055 FOREIGN KEY (business_partner_id) REFERENCES business_partners (id) NOT DEFERRABLE INITIALLY IMMEDIATE
+                CONSTRAINT FK_EAA81A4C9B6B5FBA FOREIGN KEY (account_id) REFERENCES accounts (id) NOT DEFERRABLE INITIALLY IMMEDIATE
         )
         SQL
         );
-        $this->addSql('CREATE INDEX IDX_723705D15330F055 ON transactions (business_partner_id)');
+        $this->addSql('CREATE INDEX IDX_EAA81A4C9B6B5FBA ON transactions (account_id)');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('DROP TABLE business_partners');
         $this->addSql('DROP TABLE transactions');
+        $this->addSql('DROP TABLE accounts');
+        $this->addSql('DROP TABLE business_partners');
     }
 }

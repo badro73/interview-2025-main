@@ -2,14 +2,19 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Controller\Api\ExchangeController;
 use App\Controller\Api\PayinController;
 use App\Controller\Api\PayoutController;
 use App\Controller\Api\PayoutExecutionController;
+use App\Dto\ExchangeInput;
+use App\Dto\ExchangeOutput;
 use App\Enums\TransactionTypeEnum;
 use App\Repository\TransactionRepository;
 use DateTimeImmutable;
@@ -38,32 +43,39 @@ use Symfony\Component\Validator\Constraints as Assert;
             controller: PayoutExecutionController::class,
             denormalizationContext: ['groups' => ['TransactionPatch']]
         ),
+        new Post(
+            uriTemplate: '/transactions/exchange',
+            controller: ExchangeController::class,
+            input: ExchangeInput::class,
+            name: 'exchange'
+        ),
         new GetCollection(),
     ],
     normalizationContext: ['groups' => ['TransactionView']]
 )]
+#[ApiFilter(SearchFilter::class, properties: ['account.currency' => 'exact', 'account.id'])]
 class Transaction
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
-    #[Groups(['TransactionView'])]
+    #[Groups(['TransactionView', 'AccountView'])]
     private int $id;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank]
     #[Assert\GreaterThanOrEqual(1)]
-    #[Groups(['TransactionView', 'TransactionCreate'])]
+    #[Groups(['TransactionView', 'TransactionCreate','AccountView'])]
     private ?string $amount;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
     #[Assert\Length(min: 1, max: 255)]
-    #[Groups(['TransactionView', 'TransactionCreate'])]
+    #[Groups(['TransactionView', 'TransactionCreate','AccountView'])]
     private string $name;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Assert\NotBlank]
-    #[Groups(['TransactionView', 'TransactionCreate'])]
+    #[Groups(['TransactionView', 'TransactionCreate','AccountView'])]
     private DateTimeImmutable $date;
 
     #[ORM\Column(type: Types::BOOLEAN)]
@@ -72,7 +84,7 @@ class Transaction
 
     #[ORM\Column(type: Types::STRING, length: 50, enumType: TransactionTypeEnum::class)]
     #[Assert\Type(type: TransactionTypeEnum::class, message: 'Choose a valid type.')]
-    #[Groups(['TransactionView'])]
+    #[Groups(['TransactionView', 'AccountView'])]
     private TransactionTypeEnum $type;
 
     #[ORM\Column(type: Types::STRING, length: 2)]
@@ -85,11 +97,11 @@ class Transaction
     #[Groups(['TransactionView', 'TransactionCreate'])]
     private string $iban;
 
-    #[ORM\ManyToOne(targetEntity: BusinessPartner::class, inversedBy: 'transactions')]
+    #[ORM\ManyToOne(targetEntity: Account::class, inversedBy: 'transactions')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank]
     #[Groups(['TransactionView', 'TransactionCreate'])]
-    private BusinessPartner $businessPartner;
+    private Account $account;
 
     public function getId(): int
     {
@@ -166,13 +178,13 @@ class Transaction
         $this->iban = $iban;
     }
 
-    public function getBusinessPartner(): BusinessPartner
+    public function getAccount(): Account
     {
-        return $this->businessPartner;
+        return $this->account;
     }
 
-    public function setBusinessPartner(BusinessPartner $businessPartner): void
+    public function setAccount(Account $account): void
     {
-        $this->businessPartner = $businessPartner;
+        $this->account = $account;
     }
 }

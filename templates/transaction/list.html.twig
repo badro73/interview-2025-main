@@ -1,11 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% set titleText = businessPartner is not null ? "Transaction list for " ~ businessPartner : "Transaction list" %}
+{% set titleText = account is not null ? "Transaction list for Account " ~ "- " ~ account.currency.value ~ " - Of Business Partner " ~ account.businessPartner.name : "Transaction list" %}
 
 {% block title %}{{ titleText }}{% endblock %}
 
 {% block body %}
     <h1>{{ titleText }}</h1>
+
+    <div class="card bg-light mb-4">
+        <div class="card-body">
+            <form method="get" action="{{ path('app_transaction_list') }}" class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label for="accountId" class="col-form-label">Filter by Account:</label>
+                </div>
+                <div class="col-auto">
+                    <select name="accountId" id="accountId" class="form-select" onchange="this.form.submit()">
+                        <option value="">-- All Accounts --</option>
+                        {% for acc in all_accounts %}
+                            <option value="{{ acc.id }}" {{ account and account.id == acc.id ? 'selected' : '' }}>
+                                {{ acc.businessPartner.name }} - {{ acc.currency.value }} ({{ acc.balance }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if account %}
+                    <div class="col-auto">
+                        <a href="{{ path('app_transaction_list') }}" class="btn btn-outline-secondary">Clear Filter</a>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
 
     <table class="table">
         <thead>
@@ -18,7 +43,7 @@
                 <th>Type</th>
                 <th>Country</th>
                 <th>Iban</th>
-                <th>Business partner</th>
+                <th>Account</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -26,15 +51,15 @@
             {% for transaction in transactions %}
                 <tr>
                     <td>{{ transaction.id }}</td>
-                    <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.amount|number_format(2, '.', '') }}</td>
                     <td>{{ transaction.name }}</td>
                     <td>{{ transaction.date ? transaction.date|date('Y-m-d H:i:s') : '' }}</td>
                     <td>{{ transaction.executed ? 'Yes' : 'No' }}</td>
                     <td>{{ transaction.type.value }}</td>
                     <td>{{ transaction.country }}</td>
                     <td>{{ transaction.iban }}</td>
-                    <td><a href="{{ path('app_business_partner_show', {'id': transaction.businessPartner.id}) }}"
-                           target="_blank">{{ transaction.businessPartner }}</a></td>
+                    <td><a href="{{ path('app_account_show', {'id': transaction.account.id}) }}"
+                           target="_blank">{{ transaction.account.currency.value }}</a></td>
                     <td>
                         <div class="btn-group" role="group">
                             <a class="btn btn-sm btn-outline-primary"

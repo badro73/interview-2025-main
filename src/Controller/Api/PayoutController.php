@@ -6,15 +6,20 @@ use App\Entity\Transaction;
 use App\Enums\TransactionTypeEnum;
 use App\Exceptions\TransactionExecutionException;
 use App\Service\BalanceManager;
+use App\Service\PayoutManager;
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PayoutController extends AbstractController
 {
-    public function __construct(private readonly BalanceManager $balanceManager)
-    {
+    public function __construct(
+        private readonly BalanceManager $balanceManager,
+    ) {
     }
 
+    /**
+     * @throws TransactionExecutionException
+     */
     public function __invoke(Transaction $transaction)
     {
         if ($transaction->getDate() > (new DateTime())) {
@@ -22,7 +27,7 @@ class PayoutController extends AbstractController
         }
 
         if (!$this->balanceManager->hasEnoughMoneyForPayout(
-            $transaction->getBusinessPartner(),
+            $transaction->getAccount(),
             $transaction->getAmount()
         )) {
             throw new TransactionExecutionException('You do not have enough money for a payout');

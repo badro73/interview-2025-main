@@ -22,7 +22,6 @@ class BusinessPartnerType extends AbstractType
             ->add('city')
             ->add('zip')
             ->add('country')
-            ->add('balance')
         ;
     }
 

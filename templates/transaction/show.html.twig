@@ -40,8 +40,8 @@
                 <td>{{ transaction.iban }}</td>
             </tr>
             <tr>
-                <th>Business partner</th>
-                <td>{{ transaction.businessPartner }}</td>
+                <th>Business partner - Account</th>
+                <td>{{ transaction.account.businessPartner.name }} - {{ transaction.account.currency.value }}</td>
             </tr>
         </tbody>
     </table>

@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Service;
+
+use App\Entity\Account;
+use App\Entity\BusinessPartner;
+use App\Entity\Transaction;
+use App\Enums\CurrencyEnum;
+use App\Enums\TransactionTypeEnum;
+use App\Model\ExchangeResult;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+
+class ExchangeManager
+{
+    private const DEFAULT_EXCHANGE_RATE = '1.1';
+
+    public function __construct(
+        private readonly BalanceManager $balanceManager,
+        private readonly EntityManagerInterface $entityManager
+    ) {}
+
+    public function executeExchange(BusinessPartner $partner, CurrencyEnum $from, CurrencyEnum $to, string $amount): ExchangeResult
+    {
+        $toAmount = bcmul($amount, self::DEFAULT_EXCHANGE_RATE, 2);
+
+        $this->entityManager->beginTransaction();
+        try {
+            $fromAcc = $this->balanceManager->getOrCreateAccount($partner, $from);
+            $toAcc = $this->balanceManager->getOrCreateAccount($partner, $to);
+
+            if (!$this->balanceManager->hasEnoughMoneyForPayout($fromAcc, $amount)) {
+                throw new \Exception("Insufficient balance in $from->value");
+            }
+
+            $this->balanceManager->decreaseBalance($fromAcc, $amount);
+            $this->balanceManager->increaseBalance($toAcc, $toAmount);
+
+            $now = new \DateTimeImmutable();
+
+            $sellTx = $this->createTx($fromAcc, $amount, "Sell $from->value to $to->value", TransactionTypeEnum::EXCHANGE, $now);
+            $buyTx = $this->createTx($toAcc, $toAmount, "Buy $to->value from $from->value", TransactionTypeEnum::EXCHANGE, $now);
+
+            $this->entityManager->flush();
+            $this->entityManager->refresh($sellTx);
+            $this->entityManager->refresh($buyTx);
+            $this->entityManager->commit();
+
+            return new ExchangeResult(
+                fromAccount: $fromAcc,
+                toAccount: $toAcc,
+                sellTransaction: $sellTx,
+                buyTransaction: $buyTx,
+                rate: self::DEFAULT_EXCHANGE_RATE,
+                boughtAmount: $toAmount
+            );
+
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * @throws ORMException
+     */
+    private function createTx(Account $acc, string $amt, string $name, TransactionTypeEnum $type, \DateTimeImmutable $date): Transaction
+    {
+        $tx = new Transaction();
+        $tx->setAccount($acc);
+        $tx->setAmount($amt);
+        $tx->setName($name);
+        $tx->setType($type);
+        $tx->setDate($date);
+        $tx->setExecuted(true);
+        $tx->setCountry($acc->getBusinessPartner()->getCountry());
+        $tx->setIban("INTERNAL");
+
+        $this->entityManager->persist($tx);
+
+        return $tx;
+    }
+}
