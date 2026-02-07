@@ -76,4 +76,4 @@ jobs:
         run: vendor/bin/phpunit
 
       - name: Run Behat
-        run: vendor/bin/behat || true
+        run: vendor/bin/behat --format=progress --colors
