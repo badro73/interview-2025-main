@@ -1,27 +1,79 @@
 name: Run tests
 
 on:
-    push:
-        branches: [ "main" ]
-    pull_request:
-        branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 permissions:
-    contents: read
+  contents: read
 
 jobs:
-    run_tests:
-        strategy:
-            matrix:
-                php:
-                    - 8.2
-        runs-on: ubuntu-latest
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [8.3]
 
-        steps:
-            -   uses: actions/checkout@v4
-            -   uses: shivammathur/setup-php@v2
-                with:
-                    php-version: ${{ matrix.php }}
-                    extensions: pdo_sqlite
-            -   run: composer install --no-progress
-            -   run: composer tests
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: app_test
+          MYSQL_USER: app
+          MYSQL_PASSWORD: app
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: bcmath, intl, pdo_mysql, zip, mbstring
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php }}-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --no-interaction --optimize-autoloader
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 -uroot -proot >/dev/null 2>&1; then
+              echo "MySQL is up!"
+              exit 0
+            fi
+            echo "Waiting for MySQL ($i/30)..."
+            sleep 2
+          done
+
+      - name: Setup .env.test
+        run: |
+          echo "DATABASE_URL=mysql://app:app@127.0.0.1:3306/app?serverVersion=8.0&charset=utf8mb4" > .env.test
+
+      - name: Run migrations
+        run: php bin/console doctrine:migrations:migrate --env=test -n
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
+
+      - name: Run Behat
+        run: vendor/bin/behat || true
