@@ -17,8 +17,13 @@ composer-install:
 db-create:
 	docker compose exec -T $(PHP_SERVICE) php bin/console doctrine:database:create -n
 
+db-drop:
+	docker compose exec -T $(PHP_SERVICE) php bin/console doctrine:database:dro --force -n
+
 db-create-test:
 	docker compose exec -T $(PHP_SERVICE) php bin/console doctrine:database:create -n --env=test || true
+
+db-reset: db-drop db-create migrate fixtures
 
 migrate:
 	docker compose exec -T $(PHP_SERVICE) php bin/console doctrine:migrations:migrate --no-interaction
@@ -50,12 +55,12 @@ cache-clear-prod:
 test-behat:
 	docker compose exec -T $(PHP_SERVICE) php bin/console cache:clear --env=test -n || true
 	docker compose exec -T $(PHP_SERVICE) php bin/console doctrine:migrations:migrate --no-interaction --env=test || true
-	docker compose exec -T $(PHP_SERVICE) vendor/bin/behat -v
+	docker compose exec -T $(PHP_SERVICE) vendor/bin/behat --format=progress --colors
 
 test-phpunit:
 	docker compose exec -T $(PHP_SERVICE) php bin/console cache:clear --env=test -n || true
 	docker compose exec -T $(PHP_SERVICE) php bin/console doctrine:migrations:migrate --no-interaction --env=test || true
-	docker compose exec -T $(PHP_SERVICE) vendor/bin/phpunit
+	docker compose exec -T $(PHP_SERVICE) vendor/bin/phpunit --format=progress --colors
 
 test: test-behat test-phpunit
 
