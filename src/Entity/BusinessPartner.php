@@ -38,7 +38,7 @@ class BusinessPartner
 
     #[ORM\Column(type: Types::STRING, length: 255)]
     #[Assert\Length(min: 1, max: 255)]
-    #[Groups(['BusinessPartnerView', 'BusinessPartnerCreate'])]
+    #[Groups(['BusinessPartnerView', 'BusinessPartnerCreate', 'AccountView'])]
     private string $name;
 
     #[ORM\Column(type: Types::STRING, length: 255, enumType: BusinessPartnerStatusEnum::class)]
