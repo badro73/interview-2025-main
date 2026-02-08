@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Enums\BusinessPartnerStatusEnum;
 use App\Enums\LegalFormEnum;
@@ -21,6 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new Get(),
+        new Patch(),
         new Post(
             denormalizationContext: ['groups' => ['BusinessPartnerCreate']]
         ),
@@ -38,7 +40,7 @@ class BusinessPartner
 
     #[ORM\Column(type: Types::STRING, length: 255)]
     #[Assert\Length(min: 1, max: 255)]
-    #[Groups(['BusinessPartnerView', 'BusinessPartnerCreate'])]
+    #[Groups(['BusinessPartnerView', 'BusinessPartnerCreate', 'AccountView'])]
     private string $name;
 
     #[ORM\Column(type: Types::STRING, length: 255, enumType: BusinessPartnerStatusEnum::class)]
