@@ -165,15 +165,10 @@ class AppContext implements Context
 
     private function resolveValue(string $name, mixed $value): mixed
     {
-        if(in_array($value, ['false', 0, '0'])) {
-            $value = false;
-        }
-
-        if(in_array($value, ['true', 1, '1'])) {
-            $value = true;
-        }
-
         switch ($name) {
+            case 'executed':
+                $value = in_array($value, ['true', 1, '1'], true);
+                break;
             case 'status':
                 $value = BusinessPartnerStatusEnum::tryFrom($value);
                 break;
