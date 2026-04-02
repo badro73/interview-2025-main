@@ -60,7 +60,7 @@ test-behat:
 test-phpunit:
 	docker compose exec -T $(PHP_SERVICE) php bin/console cache:clear --env=test -n || true
 	docker compose exec -T $(PHP_SERVICE) php bin/console doctrine:migrations:migrate --no-interaction --env=test || true
-	docker compose exec -T $(PHP_SERVICE) vendor/bin/phpunit --format=progress --colors
+	docker compose exec -T php vendor/bin/phpunit --colors=always
 
 test: test-behat test-phpunit
 
