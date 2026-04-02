@@ -8,7 +8,7 @@ Feature: Financial Lifecycle Management
     And I add "Accept" header equal to "application/json"
     And there is a business partner with data:
       | name       | status | legalForm        | address          | city  | zip   | country |
-      | Badreddine | active | natural_person   | 123 Symfony Lane | Paris | 75001 | France  |
+      | Badreddine | active | natural_person   | 123 Symfony Lane | Paris | 75001 | FR      |
      # Step 1: Create a CHF account
     And there is an account with data:
       | balance | currency | businessPartner          |
