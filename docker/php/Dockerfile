@@ -3,9 +3,18 @@ FROM php:8.3-fpm-alpine AS base
 
 # Installation des dépendances système nécessaires
 RUN apk add --no-cache \
-    git unzip icu-dev libzip-dev libpng-dev libjpeg-turbo-dev freetype-dev oniguruma-dev libxml2-dev \
+    bash \
+    git \
+    unzip \
+    icu-dev \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    oniguruma-dev \
+    libxml2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install bcmath intl pdo_mysql zip gd mbstring opcache
+    && docker-php-ext-install bcmath intl pdo_mysql zip gd mbstring opcache \
 
 # On récupère Composer depuis l'image officielle
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
