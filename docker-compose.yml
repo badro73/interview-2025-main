@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
+      target: dev
     container_name: interview_php
     volumes:
       - ./:/app
