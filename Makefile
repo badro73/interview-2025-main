@@ -26,6 +26,8 @@ db-create-test:
 db-reset: db-drop db-create migrate fixtures
 
 migrate:
+	@echo "Vérification de la connexion à la base de données..."
+	@docker compose exec -T $(PHP_SERVICE) sh -c 'until nc -z db 3306; do echo "En attente de MySQL..."; sleep 1; done'
 	docker compose exec -T $(PHP_SERVICE) php bin/console doctrine:migrations:migrate --no-interaction
 
 migration-up:
