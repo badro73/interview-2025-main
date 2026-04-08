@@ -13,8 +13,14 @@ RUN apk add --no-cache \
     freetype-dev \
     oniguruma-dev \
     libxml2-dev \
+    rabbitmq-c-dev \
+    build-base \
+    $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install bcmath intl pdo_mysql zip gd mbstring opcache \
+    && pecl install amqp \
+    && docker-php-ext-enable amqp \
+    && apk del $PHPIZE_DEPS # On nettoie les outils de compilation pour gagner de la place
 
 # On récupère Composer depuis l'image officielle
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
