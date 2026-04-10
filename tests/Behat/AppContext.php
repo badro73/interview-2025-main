@@ -14,18 +14,22 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use Doctrine\DBAL\Logging\Middleware;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
-use Psr\Log\NullLogger;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Zenstruck\Messenger\Test\InteractsWithMessenger;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
+use Zenstruck\Messenger\Test\Transport\TestTransport;
 
 class AppContext implements Context
 {
+    use InteractsWithMessenger;
+
     public function __construct(
         private readonly ManagerRegistry $managerRegistry,
-        private readonly IriConverterInterface $iriConverter
+        private readonly IriConverterInterface $iriConverter,
+        private readonly KernelInterface $kernel
     ) {
     }
 
@@ -161,6 +165,29 @@ class AppContext implements Context
         }
 
         return $array;
+    }
+
+    /**
+     * @Then I process the messages in the queue
+     */
+    public function iProcessTheMessagesInTheQueue(): void
+    {
+        // On récupère le conteneur de test
+        $container = $this->kernel->getContainer()->get('test.service_container');
+
+        // On récupère spécifiquement le transport nommé 'async'
+        // Symfony Messenger préfixe les services de transport par 'messenger.transport.'
+        $transport = $container->get('messenger.transport.async');
+
+        if (!$transport instanceof TestTransport) {
+            throw new \LogicException(sprintf(
+                "Le transport 'async' doit être configuré avec 'test://' dans config/packages/test/messenger.yaml. Type actuel : %s",
+                get_class($transport)
+            ));
+        }
+
+        // On force le traitement de tous les messages en attente
+        $transport->process();
     }
 
     private function resolveValue(string $name, mixed $value): mixed

@@ -137,4 +137,6 @@ Feature: Transaction
       }
     """
     Then the response status code should be 200
+    And I process the messages in the queue
+    When I send a GET request to "/api/transactions/1"
     And the JSON node "executed" should be true

@@ -94,7 +94,7 @@ class TransactionController extends AbstractController
             return $this->redirectToRoute('app_transaction_list', [], Response::HTTP_SEE_OTHER);
         }
 
-        $request->getSession()->getFlashBag()->add('success', 'Transaction successfully executed.');
+        $request->getSession()->getFlashBag()->add('success', 'Transaction in progress.');
 
         return $this->redirectToRoute('app_transaction_list', [], Response::HTTP_SEE_OTHER);
     }
