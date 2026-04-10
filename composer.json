@@ -45,7 +45,8 @@
         "soyuka/contexts": "^3.3",
         "symfony/maker-bundle": "^1.60",
         "symfony/stopwatch": "7.1.*",
-        "symfony/web-profiler-bundle": "7.1.*"
+        "symfony/web-profiler-bundle": "7.1.*",
+        "zenstruck/messenger-test": "^1.14"
     },
     "config": {
         "platform": {
