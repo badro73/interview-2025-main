@@ -48,13 +48,7 @@ class PayoutManager
         try {
            $this->bus->dispatch($message);
         }catch (\Exception $exception){
-            dd($exception->getMessage());
             throw new TransactionExecutionException($exception->getMessage());
         }
-
-
-        //$transaction->setExecuted(true);
-
-        //$this->balanceManager->decreaseBalance($transaction->getAccount(), $transaction->getAmount());
     }
 }

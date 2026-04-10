@@ -248,5 +248,14 @@
             "config/packages/web_profiler.yaml",
             "config/routes/web_profiler.yaml"
         ]
+    },
+    "zenstruck/messenger-test": {
+        "version": "1.14",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.7",
+            "ref": "e0d2a904cd584d15bcbb4c4a011549840bc01daf"
+        }
     }
 }
