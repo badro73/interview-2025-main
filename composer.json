@@ -38,12 +38,14 @@
         "symfony/yaml": "7.1.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^11.1",
         "doctrine/doctrine-fixtures-bundle": "^3.6",
         "friends-of-behat/mink-browserkit-driver": "^1.6",
         "friends-of-behat/symfony-extension": "^2.0",
+        "phpunit/phpunit": "^11.1",
         "soyuka/contexts": "^3.3",
-        "symfony/maker-bundle": "^1.60"
+        "symfony/maker-bundle": "^1.60",
+        "symfony/stopwatch": "7.1.*",
+        "symfony/web-profiler-bundle": "7.1.*"
     },
     "config": {
         "platform": {
