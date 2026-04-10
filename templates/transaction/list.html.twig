@@ -44,6 +44,7 @@
                 <th>Country</th>
                 <th>Iban</th>
                 <th>Account</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -60,6 +61,7 @@
                     <td>{{ transaction.iban }}</td>
                     <td><a href="{{ path('app_account_show', {'id': transaction.account.id}) }}"
                            target="_blank">{{ transaction.account.currency.value }}</a></td>
+                    <td>{{ transaction.executed ? 'Executed' : 'Pending' }}</td>
                     <td>
                         <div class="btn-group" role="group">
                             <a class="btn btn-sm btn-outline-primary"

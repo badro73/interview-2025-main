@@ -5,14 +5,23 @@ namespace App\Service;
 use App\Entity\Transaction;
 use App\Enums\TransactionTypeEnum;
 use App\Exceptions\TransactionExecutionException;
+use App\Message\ExchangeMessage;
 use DateTime;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class PayoutManager
 {
-    public function __construct(private readonly BalanceManager $balanceManager)
-    {
+    public function __construct(
+        private readonly BalanceManager $balanceManager,
+        private readonly MessageBusInterface $bus
+    ) {
     }
 
+    /**
+     * @throws TransactionExecutionException
+     * @throws ExceptionInterface
+     */
     public function execute(Transaction $transaction): void
     {
         if ($transaction->getType() !== TransactionTypeEnum::PAYOUT) {
@@ -34,8 +43,18 @@ class PayoutManager
             throw new TransactionExecutionException('You do not have enough money for a payout');
         }
 
-        $transaction->setExecuted(true);
+        $message = new ExchangeMessage($transaction->getId());
 
-        $this->balanceManager->decreaseBalance($transaction->getAccount(), $transaction->getAmount());
+        try {
+           $this->bus->dispatch($message);
+        }catch (\Exception $exception){
+            dd($exception->getMessage());
+            throw new TransactionExecutionException($exception->getMessage());
+        }
+
+
+        //$transaction->setExecuted(true);
+
+        //$this->balanceManager->decreaseBalance($transaction->getAccount(), $transaction->getAmount());
     }
 }
