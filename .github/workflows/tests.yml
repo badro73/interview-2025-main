@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: [8.3]
+        php: [ 8.3 ]
 
     services:
       mysql:
@@ -114,3 +114,12 @@ jobs:
         run: |
           # On force le service ECS à tirer la nouvelle image du garage (ECR)
           aws ecs update-service --cluster symfony-api-cluster --service symfony-api-back-service --force-new-deployment
+
+      - name: Run Database Migrations
+        run: |
+          TASK_ARN=$(aws ecs list-tasks --cluster symfony-api-cluster --service symfony-api-back-service --query 'taskArns[0]' --output text)
+          aws ecs execute-command --cluster symfony-api-cluster \
+          --task $TASK_ARN \
+          --container php-app \
+          --interactive \
+          --command "php bin/console doctrine:migrations:migrate --no-interaction"
