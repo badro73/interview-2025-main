@@ -19,6 +19,9 @@ CMD ["php-fpm"]
 # --- STAGE 3 : PRODUCTION (Pour AWS ECS) ---
 FROM base AS prod
 
+ENV APP_ENV=prod
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Installation de Nginx et Supervisor (absents en local)
 RUN apk add --no-cache nginx supervisor
 
