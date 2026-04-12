@@ -108,7 +108,6 @@ jobs:
         run: |
           # On build en utilisant ton Dockerfile multi-stage (cible 'prod')
           docker build --target prod -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f docker/php/Dockerfile .
-          docker build --target prod -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Update ECS Service
