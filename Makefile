@@ -68,7 +68,7 @@ test: test-behat test-phpunit
 
 # Utils
 bash:
-	docker compose exec $(PHP_SERVICE) bash
+	docker compose exec $(PHP_SERVICE) sh
 
 logs:
 	docker compose logs -f
